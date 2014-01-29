@@ -1,0 +1,50 @@
+#!/bin/bash -e
+
+case "$1" in
+  -v|--version)
+    version="$2"
+esac
+
+# TODO: Replace 2.1M3 with $version when 2.1 is released
+cp -rL $OPENSHIFT_VERTX_DIR/usr/vert.x-2.1M4/conf $OPENSHIFT_VERTX_DIR
+
+shopt -s dotglob
+for dir in conf; do
+  mkdir -p $OPENSHIFT_VERTX_DIR/$dir
+
+  # Copy shared
+  if [ -d "$OPENSHIFT_VERTX_DIR/versions/shared/$dir" ]; then
+    cp -Lr $OPENSHIFT_VERTX_DIR/versions/shared/$dir/* $OPENSHIFT_VERTX_DIR/$dir
+  fi
+  
+  # Copy version specific
+  if [ -d "$OPENSHIFT_VERTX_DIR/versions/$version/$dir" ]; then
+    cp -Lr $OPENSHIFT_VERTX_DIR/versions/$version/$dir/* $OPENSHIFT_VERTX_DIR/$dir
+  fi
+done  
+
+if [ -z "$OPENSHIFT_VERTX_HAZELCAST_CLUSTER" ]; then
+  OPENSHIFT_VERTX_HAZELCAST_CLUSTER="${OPENSHIFT_VERTX_IP}"
+fi
+
+OPENSHIFT_VERTX_PROXY_IP=$(ping -c 1 ${OPENSHIFT_GEAR_DNS} | awk '{ print $3 ; exit }' | sed 's/(//g' | sed 's/)//g')
+
+hostnames=
+for address in $OPENSHIFT_VERTX_HAZELCAST_CLUSTER; do
+    hostnames="<hostname>$address<\/hostname>${hostnames}"
+done
+
+if [ -z "$OPENSHIFT_VERTX_CLUSTER_PROXY_PORT" ]; then
+  OPENSHIFT_VERTX_CLUSTER_PROXY_PORT=7600
+fi
+
+pushd $OPENSHIFT_VERTX_DIR > /dev/null
+    sed -i -e "s/\${env.OPENSHIFT_VERTX_HAZELCAST_PROXY_PORT}/${OPENSHIFT_VERTX_HAZELCAST_PROXY_PORT}/g" \
+           -e "s/\${env.OPENSHIFT_VERTX_HAZELCAST_PORT}/${OPENSHIFT_VERTX_HAZELCAST_PORT}/g" \
+           -e "s/\${env.OPENSHIFT_VERTX_PROXY_IP}/${OPENSHIFT_VERTX_PROXY_IP}/g" \
+           -e "s/\${env.OPENSHIFT_VERTX_IP}/${OPENSHIFT_VERTX_IP}/g" \
+           -e "s/\${env.OPENSHIFT_VERTX_HAZELCAST_CLUSTER}/${hostnames}/g" \
+           ./conf/cluster.xml
+
+    sed -i -e "s|\${env.OPENSHIFT_VERTX_LOG_DIR}|${OPENSHIFT_VERTX_LOG_DIR}|g" ./conf/logging.properties
+popd > /dev/null

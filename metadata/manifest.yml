@@ -1,0 +1,98 @@
+Name: vertx
+Cartridge-Short-Name: VERTX
+Display-Name: Vert.x 2.1
+Description: "Vert.x is a lightweight, high performance application platform for the JVM that's designed for modern mobile, web, and enterprise applications."
+Version: '2.1'
+License: EPL 1.0
+License-Url: http://www.eclipse.org/legal/epl-v10.html
+Vendor: Eclipse Foundation
+Cartridge-Version: 0.0.1
+Cartridge-Vendor: redhat
+Source-Url: https://github.com/nscavell/openshift-origin-cartridge-vertx.git
+Categories:
+  - service
+  - web_framework
+  - java
+  - polygot
+Website: http://vertx.io
+Help-Topics:
+  "Developer Center": http://vertx.io
+Cart-Data:
+  - Key: OPENSHIFT_VERTX_LOG_DIR
+    Type: environment
+    Description: "Directory to store application log files."
+  - Key: OPENSHIFT_TMP_DIR
+    Type: environment
+    Description: "Directory to store application temporary files."
+  - Key: OPENSHIFT_REPO_DIR
+    Type: environment
+    Description: "Application root directory where application files reside. This directory is reset every time you do a git-push"
+  - Key: OPENSHIFT_INTERNAL_PORT
+    Type: environment
+    Description: "Internal port to which the web-framework binds to."
+  - Key: OPENSHIFT_INTERNAL_IP
+    Type: environment
+    Description: "Internal IP to which the web-framework binds to."
+  - Key: OPENSHIFT_APP_DNS
+    Type: environment
+    Description: "Fully qualified domain name for the application."
+  - Key: OPENSHIFT_APP_NAME
+    Type: environment
+    Description: "Application name"
+  - Key: OPENSHIFT_DATA_DIR
+    Type: environment
+    Description: "Directory to store application data files. Preserved across git-pushes. Not shared across gears."
+  - Key: OPENSHIFT_APP_UUID
+    Type: environment
+    Description: "Unique ID which identified the application. Does not change between gears."
+  - Key: OPENSHIFT_GEAR_UUID
+    Type: environment
+    Description: "Unique ID which identified the gear. This value changes between gears."
+Publishes:
+  publish-http-url:
+    Type: "NET_TCP:httpd-proxy-info"
+  publish-gear-endpoint:
+    Type: "NET_TCP:gear-endpoint-info"
+  publish-vertx-cluster:
+    Type: "NET_TCP:vertx-cluster-info"
+Subscribes:
+  set-db-connection-info:
+    Type: "NET_TCP:db:connection-info"
+    Required: false
+  set-nosql-db-connection-info:
+    Type: "NET_TCP:nosqldb:connection-info"
+    Required: false
+  set-mysql-connection-info:
+    Type: "NET_TCP:db:mysql"
+    Required : false
+  set-postgres-connection-info:
+    Type: "NET_TCP:db:postgres"
+    Required : false
+  set-doc-url:
+    Type: "STRING:urlpath"
+    Required : false
+  set-vertx-cluster:
+    Type: "NET_TCP:vertx-cluster-info"
+Scaling:
+  Min: 1
+  Max: -1
+Endpoints:
+  - Private-IP-Name:   IP
+    Private-Port-Name: PORT
+    Private-Port:      8080
+    Public-Port-Name:  PROXY_PORT
+    Mappings:
+      - Frontend:      ""
+        Backend:       ""
+        Options:       { "websocket": 1}
+  - Private-IP-Name:   IP
+    Private-Port-Name: HAZELCAST_PORT
+    Private-Port:      5701
+    Public-Port-Name:  HAZELCAST_PROXY_PORT
+  - Private-IP-Name:   IP
+    Private-Port-Name: CLUSTER_PORT
+    Private-Port:      9123
+    Public-Port-Name:  CLUSTER_PROXY_PORT
+Additional-Control-Actions:
+    - threaddump
+Install-Build-Required: false

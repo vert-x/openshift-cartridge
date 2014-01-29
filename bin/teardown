@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+set -x
+
+if [ "$OPENSHIFT_APP_UUID" = "$OPENSHIFT_GEAR_UUID" ]; then
+	rm -rf ${OPENSHIFT_HOMEDIR}/.m2
+fi

@@ -1,0 +1,15 @@
+#!/bin/bash -eu
+
+case "$1" in
+  -v|--version)
+    version="$2"
+esac
+
+mkdir -p ${OPENSHIFT_HOMEDIR}/.m2
+
+shopt -s dotglob
+for dir in logs sys_mods; do
+    mkdir -p $OPENSHIFT_VERTX_DIR/$dir
+done
+
+echo "$version" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_VERSION

@@ -1,0 +1,167 @@
+#!/bin/bash -e
+
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+version=${OPENSHIFT_VERTX_VERSION}
+logf="$OPENSHIFT_VERTX_LOG_DIR/console.log"
+
+# TODO: Replace 2.1M3 with $version when 2.1 is released
+VERTX_HOME=${OPENSHIFT_VERTX_DIR}/usr/vert.x-2.1M4
+VERTX_PID_FILE=${OPENSHIFT_HOMEDIR}/app-root/runtime/vertx.pid
+
+# Check if the vertx process is running
+function isrunning() {
+    
+    # Check for running app
+    if [ -f "$VERTX_PID_FILE" ]; then
+      vertxpid=$(cat $VERTX_PID_FILE);
+      if /bin/ps --pid $vertxpid 1>&2 >/dev/null;
+      then
+        return 0
+      fi
+    fi
+   
+    return 1
+}
+
+# Kill the process given by $1 and its children
+killtree() {
+    local _pid=$1
+    for _child in $(ps -o pid --no-headers --ppid ${_pid}); do
+        killtree ${_child}
+    done
+
+    local should_be_gone_pid=$(ps -o pid -p ${_pid} --no-headers)
+    if [ -z $should_be_gone_pid ]; then
+        return
+    else
+        kill -TERM ${_pid}
+    fi
+
+    local count=0
+    while [ ${count} -lt 15 ]
+    do
+        local should_be_gone_pid=$(ps -o pid -p ${_pid} --no-headers)
+        if [ -z $should_be_gone_pid ]; then
+                return
+        else
+                sleep 2
+                let count=${count}+1
+        fi
+    done
+
+    local should_be_gone_pid=$(ps -o pid -p ${_pid} --no-headers)
+    if [ ! -z $should_be_gone_pid ]
+    then
+        kill -9 ${_pid}
+    fi
+}
+
+function stop() {
+  echo "Stopping $cartridge_type cart"
+  
+  if isrunning; then
+    if [ -f "$VERTX_PID_FILE" ]; then
+      pid=$(cat $VERTX_PID_FILE);
+      echo "Sending SIGTERM to vertx:$pid ..." 1>&2
+      killtree $pid
+    else 
+      echo "Failed to locate Vert.x PID File" 1>&2
+    fi
+  fi
+}
+
+function setup_hazelcast {
+  # TODO: Figure out a better way to do this
+  if [ -f "$OPENSHIFT_VERTX_DIR/versions/shared/conf/cluster.xml" ]; then
+    cp $OPENSHIFT_VERTX_DIR/versions/shared/conf/cluster.xml $OPENSHIFT_VERTX_DIR/conf/
+  fi
+
+  if [ -f "$OPENSHIFT_VERTX_DIR/versions/$version/conf/cluster.xml" ]; then
+    cp $OPENSHIFT_VERTX_DIR/versions/$version/conf/cluster.xml $OPENSHIFT_VERTX_DIR/conf/
+  fi
+  
+  if [ -z "$OPENSHIFT_VERTX_HAZELCAST_CLUSTER" ]; then
+    OPENSHIFT_VERTX_HAZELCAST_CLUSTER="${OPENSHIFT_VERTX_IP}"
+  fi
+  
+  OPENSHIFT_VERTX_PROXY_IP=$(ping -c 1 ${OPENSHIFT_GEAR_DNS} | awk '{ print $3 ; exit }' | sed 's/(//g' | sed 's/)//g')
+  
+  hostnames=
+  for address in $OPENSHIFT_VERTX_HAZELCAST_CLUSTER; do
+    hostnames="<hostname>$address<\/hostname>${hostnames}"
+  done
+  
+  pushd $OPENSHIFT_VERTX_DIR > /dev/null
+      sed -i  -e "s/\${env.OPENSHIFT_VERTX_HAZELCAST_PROXY_PORT}/${OPENSHIFT_VERTX_HAZELCAST_PROXY_PORT}/g" \
+              -e "s/\${env.OPENSHIFT_VERTX_HAZELCAST_PORT}/${OPENSHIFT_VERTX_HAZELCAST_PORT}/g" \
+              -e "s/\${env.OPENSHIFT_VERTX_PROXY_IP}/${OPENSHIFT_VERTX_PROXY_IP}/g" \
+              -e "s/\${env.OPENSHIFT_VERTX_IP}/${OPENSHIFT_VERTX_IP}/g" \
+              -e "s/\${env.OPENSHIFT_VERTX_HAZELCAST_CLUSTER}/${hostnames}/g" \
+              ./conf/cluster.xml
+  popd > /dev/null
+}
+
+function start() {
+  echo "Starting Vert.x cartridge"
+
+  if isrunning; then
+      echo "Application is already running"
+      return 0
+  fi
+
+  envf="$OPENSHIFT_REPO_DIR/configuration/vertx.env"
+  #  Source environment if it exists.
+  [ -f "$envf" ]  &&  source "$envf"
+
+  # Determine correct vertx run command (run, runmod, runzip). TODO: A nice feature would have vertx have one run command
+  if [ "$vertx_zip" ]; then
+    vertx_run="runzip $vertx_zip"
+  fi
+  if [ "$vertx_module" ]; then
+    vertx_run="runmod $vertx_module"
+  fi
+  if [ "$vertx_app" ]; then
+    vertx_run="run $vertx_app"
+  fi
+
+  if [ -z "$vertx_run" ]; then
+    error "Could not determine how to run vertx. Make sure you have configured vertx_app|vertx_module|vertx_zip in $envf" 1>&2 1
+  fi
+
+  # Setup clustering
+  if [ "$OPENSHIFT_VERTX_HAZELCAST_PROXY_PORT" ]; then
+    setup_hazelcast
+
+    VERTX_OPTS="$VERTX_OPTS -Dvertx.cluster.public.host=${OPENSHIFT_VERTX_PROXY_IP} -Dvertx.cluster.public.port=${OPENSHIFT_VERTX_CLUSTER_PROXY_PORT}"
+    export VERTX_OPTS
+
+    vertx_cluster="-cluster -cluster-port $OPENSHIFT_VERTX_CLUSTER_PORT -cluster-host $OPENSHIFT_VERTX_IP"
+  fi
+
+  pushd $OPENSHIFT_REPO_DIR > /dev/null
+
+    export CLASSPATH=$OPENSHIFT_VERTX_DIR/conf
+    export VERTX_MODS=$OPENSHIFT_VERTX_DIR/sys_mods
+    export VERTX_JUL_CONFIG=$OPENSHIFT_VERTX_DIR/conf/logging.properties
+    $VERTX_HOME/bin/vertx $vertx_run $vertx_options $vertx_cluster >> $logf 2>&1 &
+    
+    PROCESS_ID=$!
+    echo "$PROCESS_ID" > ${VERTX_PID_FILE}
+  popd > /dev/null
+}
+
+function restart() {
+    echo "Restarting $cartridge_type cart"
+   
+    stop
+    
+    start
+}
+
+case "$1" in
+  start)        start ;;
+  stop)     stop ;;
+  restart)    restart ;;
+  *)            exit 0
+esac
