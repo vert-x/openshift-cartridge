@@ -3,10 +3,12 @@
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
 version=${OPENSHIFT_VERTX_VERSION}
+milestone=${OPENSHIFT_VERTX_MILESTONE}
+dist=$version$milestone
+
 logf="$OPENSHIFT_VERTX_LOG_DIR/console.log"
 
-# TODO: Replace 2.1M3 with $version when 2.1 is released
-VERTX_HOME=${OPENSHIFT_VERTX_DIR}/usr/vert.x-2.1M4
+VERTX_HOME=${OPENSHIFT_VERTX_DIR}/usr/$dist
 VERTX_PID_FILE=${OPENSHIFT_HOMEDIR}/app-root/runtime/vertx.pid
 
 # Check if the vertx process is running

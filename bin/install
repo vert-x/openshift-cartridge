@@ -1,12 +1,21 @@
 #!/bin/bash -e
 
-case "$1" in
-  -v|--version)
-    version="$2"
-esac
+#case "$1" in
+#  -v|--version)
+#    version="$2"
+#esac
 
-# TODO: Replace 2.1M3 with $version when 2.1 is released
-cp -rL $OPENSHIFT_VERTX_DIR/usr/vert.x-2.1M4/conf $OPENSHIFT_VERTX_DIR
+version=${OPENSHIFT_VERTX_VERSION}
+milestone=${OPENSHIFT_VERTX_MILESTONE}
+
+vertx_dist=vert.x-$version$milestone
+
+if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/$vertx_dist" ]; then
+  wget http://dl.bintray.com/vertx/downloads/$vertx_dist.tar.gz
+  unzip $vertx_dist.tar.gz -d $OPENSHIFT_VERTX_DIR/usr/
+fi
+
+cp -rL $OPENSHIFT_VERTX_DIR/usr/$vertx_dist/conf $OPENSHIFT_VERTX_DIR
 
 shopt -s dotglob
 for dir in conf; do
@@ -21,7 +30,7 @@ for dir in conf; do
   if [ -d "$OPENSHIFT_VERTX_DIR/versions/$version/$dir" ]; then
     cp -Lr $OPENSHIFT_VERTX_DIR/versions/$version/$dir/* $OPENSHIFT_VERTX_DIR/$dir
   fi
-done  
+done
 
 if [ -z "$OPENSHIFT_VERTX_HAZELCAST_CLUSTER" ]; then
   OPENSHIFT_VERTX_HAZELCAST_CLUSTER="${OPENSHIFT_VERTX_IP}"

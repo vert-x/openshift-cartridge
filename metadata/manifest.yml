@@ -7,11 +7,12 @@ License: EPL 1.0
 License-Url: http://www.eclipse.org/legal/epl-v10.html
 Vendor: Eclipse Foundation
 Cartridge-Version: 0.0.1
-Cartridge-Vendor: redhat
-Source-Url: https://github.com/nscavell/openshift-origin-cartridge-vertx.git
+Cartridge-Vendor: jboss
+Source-Url: https://github.com/nscavell/openshift-cartridge.git
 Categories:
   - service
   - web_framework
+  - community
   - java
   - polygot
 Website: http://vertx.io

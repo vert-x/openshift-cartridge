@@ -13,3 +13,4 @@ for dir in logs sys_mods; do
 done
 
 echo "$version" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_VERSION
+echo "M4" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_MILESTONE
