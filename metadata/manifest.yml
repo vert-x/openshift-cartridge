@@ -10,7 +10,6 @@ Cartridge-Version: 0.0.1
 Cartridge-Vendor: jboss
 Source-Url: https://github.com/vert-x/openshift-cartridge.git
 Categories:
-  - service
   - web_framework
   - community
   - java
