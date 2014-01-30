@@ -10,6 +10,11 @@ milestone=${OPENSHIFT_VERTX_MILESTONE}
 
 vertx_dist=vert.x-$version$milestone
 
+if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/$vertx_dist" ]; then
+  wget http://dl.bintray.com/vertx/downloads/$vertx_dist.tar.gz -O $OPENSHIFT_TMP_DIR/$vertx_dist.tar.gz
+  tar xzf $OPENSHIFT_TMP_DIR/$vertx_dist.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
+fi
+
 cp -rL $OPENSHIFT_VERTX_DIR/usr/$vertx_dist/conf $OPENSHIFT_VERTX_DIR
 
 shopt -s dotglob
