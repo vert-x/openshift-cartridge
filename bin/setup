@@ -14,3 +14,8 @@ done
 
 echo "$version" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_VERSION
 echo "M4" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_MILESTONE
+
+if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/$vertx_dist" ]; then
+  wget http://dl.bintray.com/vertx/downloads/$vertx_dist.tar.gz -O $OPENSHIFT_TMP_DIR/$vertx_dist.tar.gz
+  tar xzf $OPENSHIFT_TMP_DIR/$vertx_dist.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
+fi
