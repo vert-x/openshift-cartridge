@@ -8,7 +8,7 @@ License-Url: http://www.eclipse.org/legal/epl-v10.html
 Vendor: Eclipse Foundation
 Cartridge-Version: 0.0.1
 Cartridge-Vendor: jboss
-Source-Url: https://github.com/nscavell/openshift-cartridge.git
+Source-Url: https://github.com/vert-x/openshift-cartridge.git
 Categories:
   - service
   - web_framework
