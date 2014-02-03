@@ -144,7 +144,7 @@ function start() {
   pushd $OPENSHIFT_REPO_DIR > /dev/null
 
     export CLASSPATH=$OPENSHIFT_VERTX_DIR/conf
-    export VERTX_MODS=$OPENSHIFT_VERTX_DIR/sys_mods
+    export VERTX_MODS=$OPENSHIFT_REPO_DIR/mods
     export VERTX_JUL_CONFIG=$OPENSHIFT_VERTX_DIR/conf/logging.properties
     $VERTX_HOME/bin/vertx $vertx_run $vertx_run_options $vertx_cluster >> $logf 2>&1 &
     
