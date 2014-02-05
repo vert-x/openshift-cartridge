@@ -11,36 +11,37 @@ To create a scaled vertx application run the following command:
 
     rhc app create demo https://raw.github.com/vert-x/openshift-cartridge/master/metadata/manifest.yml -s
 
-This will create a directory named `demo` which will house the Vert.x application. Inside this folder is
-a `server.js` file which is the default cartridge application which just serves static files under the `web-root` directory.
+This will create a directory named `demo` which will include the `server.js` application that this cartridge uses as the
+default application. You should be able to access your application and see a OpenShift Vertx welcome page. From here you
+now have the ability to run your favorite Vert.x application in the cloud. Enjoy !
 
 ## Running a raw verticle
 
-The default application is configured to run the raw `server.js`. This is controlled by the `configuration/vertx.env` file entry:
+The cartridge by default is configured to run the `server.js` as a raw verticle. To modify this value change the variable in the `configuration/vertx.env` file:
 
     export vertx_app=server.js
 
 ## Running a module
 
-To configure the cartridge to run a module just add the module name, i.e. `org.example~my-mod~1.0.0` to the `configuration/vertx.env` file as such:
+To configure the cartridge to run a module just add the module name, i.e. `org.example~my-mod~1.0.0` to the `configuration/vertx.env` file:
 
     export vertx_module=org.example~my-mod~1.0.0
 
-Then just make sure your module is located in the `mods` directory of your application, which can then be deployed to OpenShift via git push.
+This tells Vert.x to look for the module `org.example~my-mod~1.0.0` under the `mods` directory of your application. To deploy the module just add the module (under the `mods` directory) to the git repository and push.
 
 ## Running a module zip
 
-To configure the cartridge to run a module zip just add the name, i.e. `org.example~my-mod.zip` to the `configuration/vertx.env` file as such:
+To configure the cartridge to run a module zip just add the name, i.e. `org.example~my-mod.zip` to the `configuration/vertx.env` file:
 
 
     export vertx_zip=org.example~my-mod.zip
 
 
-Then just make sure your module zip is in the root directory of your application, which can then be deployed to OpenShift via git push.
+This tells Vert.x to look for the `org.example~my-mod.zip` file in the root of your application. To deploy the module zip just add the zip module to the git repository and push.
 
 ## Vert.x run options
 
-All Vert.x run options are configured in the `configuration/vertx.env` file. For example if you want to specify the number of verticle instances to deploy you can modify the file as such:
+All Vert.x run options are configured with the `vertx_run_options` variable in the `configuration/vertx.env` file. For example if you want to specify the number of instances to deploy:
 
     export vertx_run_options="-instances 3"
 
