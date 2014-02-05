@@ -1,13 +1,16 @@
 # OpenShift Cartridge for Vert.x
-A downloadable cartridge which can be used to run Vert.x on OpenShift
+A downloadable cartridge which can be used to run Vert.x on OpenShift. 
 
 ## Getting started
 
-To create a vertx application on OpenShift (we'll call it demo) run the following command using the rhc client tools:
+If you don't have an account, or aren't familiar with OpenShift you can go to 
+[Getting Started with OpenShift](https://www.openshift.com/get-started/) to help guide you through setting up your environment.
+
+Once our environment is setup we can create our first application (we'll call it demo) using the rhc client tools.
 
     rhc app create demo https://raw.github.com/vert-x/openshift-cartridge/master/metadata/manifest.yml
 
-To create a scaled vertx application run the following command:
+To create a scaled vertx application:
 
     rhc app create demo https://raw.github.com/vert-x/openshift-cartridge/master/metadata/manifest.yml -s
 
