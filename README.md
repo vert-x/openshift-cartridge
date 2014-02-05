@@ -15,7 +15,9 @@ To create a scaled vertx application run the following command:
 
 The default application is configured to run the raw `server.js`. This is controlled by the `configuration/vertx.env` file entry:
 
+```
   export vertx_app=server.js
+```
 
 ## Running a module
 
