@@ -13,7 +13,7 @@ To create a scaled vertx application run the following command:
 
 ## Running a raw verticle
 
-The default application is configured to run the raw `server.js`. This is controlled by the `configuration/vertx.env' file entry:
+The default application is configured to run the raw `server.js`. This is controlled by the `configuration/vertx.env` file entry:
 
   export vertx_app=server.js
 
@@ -21,7 +21,9 @@ The default application is configured to run the raw `server.js`. This is contro
 
 To configure the cartridge to run a module just add the module name, i.e. `org.example~my-mod~1.0.0` to the `configuration/vertx.env` file as such:
 
+```
   export vertx_module=org.example~my-mod~1.0.0
+```
 
 Then just make sure your module is located in the `mods` directory of your application, which can then be deployed to OpenShift via git push.
 
@@ -29,7 +31,9 @@ Then just make sure your module is located in the `mods` directory of your appli
 
 To configure the cartridge to run a module zip just add the name, i.e. `org.example~my-mod.zip` to the `configuration/vertx.env` file as such:
 
+```
   export vertx_zip=org.example~my-mod.zip
+```
 
 Then just make sure your module zip is in the root directory of your application, which can then be deployed to OpenShift via git push.
 
