@@ -8,7 +8,7 @@ esac
 mkdir -p ${OPENSHIFT_HOMEDIR}/.m2
 
 shopt -s dotglob
-for dir in logs sys_mods; do
+for dir in logs; do
     mkdir -p $OPENSHIFT_VERTX_DIR/$dir
 done
 
