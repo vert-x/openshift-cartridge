@@ -112,6 +112,16 @@ function start() {
       return 0
   fi
 
+  if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/$dist" ]; then
+    for dir in "$OPENSHIFT_VERTX_DIR/usr/vert.x-*"
+    do
+      rm -rf $dir
+    done
+
+    wget http://dl.bintray.com/vertx/downloads/$dist.tar.gz -O $OPENSHIFT_TMP_DIR/$dist.tar.gz
+    tar xzf $OPENSHIFT_TMP_DIR/$dist.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
+  fi
+
   envf="$OPENSHIFT_REPO_DIR/configuration/vertx.env"
   #  Source environment if it exists.
   [ -f "$envf" ]  &&  source "$envf"

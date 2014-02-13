@@ -63,6 +63,19 @@ Clustering is supported when the application is scaled through OpenShift when yo
 
 For more information on application scaling in OpenShift see [Scaling on OpenShift](https://www.openshift.com/developers/scaling).
 
+
+## Updating Vert.x
+
+The version of Vert.x that is installed is dictated by the version of the cartridge specified in the `metadata/manifest.yml` file when you first create
+the application. However it may be necessary to update the version manually w/out having to re-create the application. To do this there are two files under the `vertx/env` directory
+
+    OPENSHIFT_VERTX_VERSION
+    OPENSHIFT_VERTX_MILESTONE
+
+These two values make up the Vert.x distribution that will be downloaded and installed into `vertx/usr`. After changing these values restart the application and you should now be running the new version.
+
+**_Note_: To save space, the cartridge will remove any vert.x installations under this directory once the application is restarted.**
+
 ## TODO
 
 - Support maven project so module/zip is built when code is pushed to OpenShift.
