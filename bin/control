@@ -170,9 +170,36 @@ function restart() {
     start
 }
 
+# Clean up any log files
+function tidy() {
+  client_message "Emptying log dir: $OPENSHIFT_VERTX_LOG_DIR"
+  shopt -s dotglob
+  rm -rf $OPENSHIFT_VERTX_LOG_DIR/*
+}
+
+function threaddump() {
+  echo "Thread dump for $cartridge_type cartridge"
+
+    if ! isrunning; then
+        echo "Application is stopped"
+        exit 1
+    elif [ -f "$VERTX_PID_FILE" ]; then
+        pid=$(cat $VERTX_PID_FILE);
+        java_pid=$(ps h --ppid $pid -o '%p')
+        kill -3 $java_pid
+        client_result "Success"
+        client_result ""
+        client_result "The thread dump file will be available via: rhc tail $OPENSHIFT_APP_NAME -g $OPENSHIFT_GEAR_UUID -f ${OPENSHIFT_TMP_DIR}${cartridge_type}.log -o '-n 250'"
+    else 
+        echo "Failed to locate Vert.x PID File"
+    fi
+}
+
 case "$1" in
   start)        start ;;
-  stop)     stop ;;
-  restart)    restart ;;
+  stop)         stop ;;
+  restart)      restart ;;
+  tidy)         tidy ;;
+  threaddump)   threaddump ;;
   *)            exit 0
 esac
