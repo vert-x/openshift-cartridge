@@ -181,12 +181,11 @@ function threaddump() {
     echo "Application is stopped"
     exit 1
   elif [ -f "$VERTX_PID_FILE" ]; then
-    pid=$(cat $VERTX_PID_FILE);
-    java_pid=$(ps h --ppid $pid -o '%p')
-    kill -3 $java_pid
+    javapid=$(cat $VERTX_PID_FILE);
+    kill -3 $javapid
     client_result "Success"
-    client_result ""
-    client_result "The thread dump file will be available via: rhc tail $OPENSHIFT_APP_NAME -g $OPENSHIFT_GEAR_UUID -f ${OPENSHIFT_TMP_DIR}${cartridge_type}.log -o '-n 250'"
+    client_result "The thread dump file will be available via:"
+    client_result "rhc tail $OPENSHIFT_APP_NAME -g $OPENSHIFT_GEAR_UUID -f $logf -o '-n 250'"
   else
     echo "Failed to locate Vert.x PID File"
   fi
