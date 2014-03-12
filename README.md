@@ -8,11 +8,11 @@ If you don't have an account, or aren't familiar with OpenShift you can go to
 
 Once our environment is setup we can create our first application (we'll call it demo) using the rhc client tools.
 
-    rhc app create demo https://raw.github.com/vert-x/openshift-cartridge/master/metadata/manifest.yml
+    rhc app create demo vertx
 
 To create a scaled vertx application:
 
-    rhc app create demo https://raw.github.com/vert-x/openshift-cartridge/master/metadata/manifest.yml -s
+    rhc app create demo vertx -s
 
 This will create a directory named `demo` which will include the `server.js` application that this cartridge uses as the
 default application. You should be able to access your application and see a OpenShift Vertx welcome page. From here you
