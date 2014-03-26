@@ -167,6 +167,14 @@ function restart() {
   start
 }
 
+function status() {
+    if isrunning; then
+        client_result "Application is running"
+    else
+        client_result "Application is either stopped or inaccessible"
+    fi
+}
+
 # Clean up any log files
 function tidy() {
   client_message "Emptying log dir: $OPENSHIFT_VERTX_LOG_DIR"
@@ -195,6 +203,7 @@ case "$1" in
   start)        start ;;
   stop)         stop ;;
   restart)      restart ;;
+  status)          status ;;
   tidy)         tidy ;;
   threaddump)   threaddump ;;
   *)            exit 0
