@@ -168,11 +168,11 @@ function restart() {
 }
 
 function status() {
-    if isrunning; then
-        client_result "Application is running"
-    else
-        client_result "Application is either stopped or inaccessible"
-    fi
+  if isrunning; then
+    client_result "Application is running"
+  else
+    client_result "Application is either stopped or inaccessible"
+  fi
 }
 
 # Clean up any log files
@@ -203,7 +203,7 @@ case "$1" in
   start)        start ;;
   stop)         stop ;;
   restart)      restart ;;
-  status)          status ;;
+  status)       status ;;
   tidy)         tidy ;;
   threaddump)   threaddump ;;
   *)            exit 0
