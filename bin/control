@@ -135,21 +135,33 @@ function start() {
   if [ "$vertx_app" ]; then
     vertx_run="run $vertx_app"
   fi
-
   if [ -z "$vertx_run" ]; then
     error "Could not determine how to run vertx. Make sure you have configured vertx_app|vertx_module|vertx_zip in $envf" 1>&2 1
   fi
+
+  # Setup max heap and permgen
+  if [ -z "$JVM_HEAP_RATIO" ]; then
+    JVM_HEAP_RATIO=0.5
+  fi
+  if [ -z "$JVM_PERMGEN_RATIO" ]; then
+    JVM_PERMGEN_RATIO=0.2
+  fi
+  max_memory_mb=${OPENSHIFT_GEAR_MEMORY_MB}
+  max_heap=$( echo "$max_memory_mb * $JVM_HEAP_RATIO" | bc | awk '{print int($1+0.5)}')
+  max_permgen=$( echo "$max_memory_mb * $JVM_PERMGEN_RATIO" | bc | awk '{print int($1+0.5)}')
+  VERTX_OPTS="$VERTX_OPTS -Xmx${max_heap}m -XX:MaxPermSize=${max_permgen}m"
+  export VERTX_OPTS
 
   # Setup clustering
   if [ "$OPENSHIFT_VERTX_HAZELCAST_PROXY_PORT" ]; then
     setup_hazelcast
 
     VERTX_OPTS="$VERTX_OPTS -Dvertx.cluster.public.host=${OPENSHIFT_VERTX_PROXY_IP} -Dvertx.cluster.public.port=${OPENSHIFT_VERTX_CLUSTER_PROXY_PORT}"
-    export VERTX_OPTS
 
     vertx_cluster="-cluster -cluster-port $OPENSHIFT_VERTX_CLUSTER_PORT -cluster-host $OPENSHIFT_VERTX_IP"
   fi
 
+  # Start up vertx
   pushd $OPENSHIFT_REPO_DIR > /dev/null
 
     export CLASSPATH=$OPENSHIFT_VERTX_DIR/conf
