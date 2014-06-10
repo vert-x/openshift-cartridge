@@ -6,7 +6,8 @@
 #esac
 
 version=${OPENSHIFT_VERTX_VERSION}
-milestone=${OPENSHIFT_VERTX_MILESTONE}
+# Uncomment to include a milestone release
+#milestone=${OPENSHIFT_VERTX_MILESTONE}
 
 vertx_dist=vert.x-$version$milestone
 

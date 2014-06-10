@@ -13,4 +13,5 @@ for dir in logs; do
 done
 
 echo "$version" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_VERSION
-echo "RC4" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_MILESTONE
+# Uncomment to include a milestone release
+#echo "RC4" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_MILESTONE

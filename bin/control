@@ -3,7 +3,8 @@
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
 version=${OPENSHIFT_VERTX_VERSION}
-milestone=${OPENSHIFT_VERTX_MILESTONE}
+# Uncomment to include a milestone release
+#milestone=${OPENSHIFT_VERTX_MILESTONE}
 dist=vert.x-$version$milestone
 
 logf="$OPENSHIFT_VERTX_LOG_DIR/console.log"
