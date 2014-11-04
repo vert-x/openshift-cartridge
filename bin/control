@@ -106,12 +106,15 @@ function start() {
     echo "Updating Vert.x $version cartridge"
     wget http://dl.bintray.com/vertx/downloads/vert.x-$version.tar.gz -O $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
 
-    for dir in "$OPENSHIFT_VERTX_DIR/usr/vert.x-*"
-    do
-      rm -rf $dir
-    done
+    rm -rf $OPENSHIFT_VERTX_DIR/usr/vert.x-*
 
     tar xzf $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
+    rm -f $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
+
+    echo "Leaving the existing configuration in vertx/conf directory."
+    echo "You might want to copy over the new configuration files"
+    echo "from vertx/vert.x-$version/conf directory."
+    echo
   fi
 
   echo "Starting Vert.x $version cartridge"

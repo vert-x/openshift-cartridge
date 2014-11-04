@@ -8,22 +8,24 @@ if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/vert.x-$version" ]; then
   rm -f $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
 fi
 
-cp -rL $OPENSHIFT_VERTX_DIR/usr/vert.x-$version/conf $OPENSHIFT_VERTX_DIR
-
+mkdir -p $OPENSHIFT_VERTX_DIR/conf
 shopt -s dotglob
-for dir in conf; do
-  mkdir -p $OPENSHIFT_VERTX_DIR/$dir
 
-  # Copy shared
-  if [ -d "$OPENSHIFT_VERTX_DIR/versions/shared/$dir" ]; then
-    cp -Lr $OPENSHIFT_VERTX_DIR/versions/shared/$dir/* $OPENSHIFT_VERTX_DIR/$dir
-  fi
-  
-  # Copy version specific
-  if [ -d "$OPENSHIFT_VERTX_DIR/versions/$version/$dir" ]; then
-    cp -Lr $OPENSHIFT_VERTX_DIR/versions/$version/$dir/* $OPENSHIFT_VERTX_DIR/$dir
-  fi
-done
+# Copy dist configuration
+if [ -d "$OPENSHIFT_VERTX_DIR/usr/vert.x-$version/conf" ]; then
+  cp -Lr $OPENSHIFT_VERTX_DIR/usr/vert.x-$version/conf/* $OPENSHIFT_VERTX_DIR/conf
+fi
+
+# Copy shared configuration
+if [ -d "$OPENSHIFT_VERTX_DIR/versions/shared/conf" ]; then
+  cp -Lr $OPENSHIFT_VERTX_DIR/versions/shared/conf/* $OPENSHIFT_VERTX_DIR/conf
+fi
+
+# Copy version specific configuration
+if [ -d "$OPENSHIFT_VERTX_DIR/versions/$version/conf" ]; then
+  cp -Lr $OPENSHIFT_VERTX_DIR/versions/$version/conf/* $OPENSHIFT_VERTX_DIR/conf
+fi
+
 
 OPENSHIFT_VERTX_PROXY_IP=$(ping -c 1 ${OPENSHIFT_GEAR_DNS} | awk '{ print $3 ; exit }' | sed 's/(//g' | sed 's/)//g')
 

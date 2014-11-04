@@ -73,7 +73,9 @@ The version of Vert.x that is installed by default is specified by the cartridge
 
 The above commands will change the Vert.x version stored in form of `$OPENSHIFT_VERTX_VERSION` environment variable and restart the application. The new version will be downloaded and installed into `vertx/usr` directory during the cartridge startup phase. Once the application is restarted successfully, you should be running the new version.
 
-**_Note_: The cartridge removes all unused versions from `vertx/usr` directory during the cartridge startup phase..**
+The existing configuration in `vertx/conf` directory will be left unchanged. If you want to update the configuration as well, you might want to copy over the files from the `vertx/usr/vert.x-$version/conf` directory.
+
+**_Note_: The cartridge removes all unused versions from `vertx/usr` directory during the cartridge startup phase.**
 
 ## TODO
 
