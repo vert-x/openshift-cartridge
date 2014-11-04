@@ -8,7 +8,7 @@ esac
 case $version in
 2.1)
   # Add minor version
-  version=$version.2
+  version=$version.4
   ;;
 *)
   echo "Unsupported Vert.x version $version" >&2
