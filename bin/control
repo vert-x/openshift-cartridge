@@ -3,13 +3,10 @@
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
 version=${OPENSHIFT_VERTX_VERSION}
-# Uncomment to include a milestone release
-#milestone=${OPENSHIFT_VERTX_MILESTONE}
-dist=vert.x-$version$milestone
 
 logf="$OPENSHIFT_VERTX_LOG_DIR/console.log"
 
-VERTX_HOME=${OPENSHIFT_VERTX_DIR}/usr/$dist
+VERTX_HOME=${OPENSHIFT_VERTX_DIR}/usr/vert.x-$version
 VERTX_PID_FILE=${OPENSHIFT_HOMEDIR}/app-root/runtime/vertx.pid
 
 # Check if the vertx process is running
@@ -60,7 +57,7 @@ killtree() {
 }
 
 function stop() {
-  echo "Stopping $cartridge_type cart"
+  echo "Stopping Vert.x $version cartridge"
   
   if isrunning; then
     if [ -f "$VERTX_PID_FILE" ]; then
@@ -100,22 +97,24 @@ function setup_hazelcast {
 }
 
 function start() {
-  echo "Starting $cartridge_type cart"
-
   if isrunning; then
-      echo "Application is already running"
+      echo "Vert.x is already running"
       return 0
   fi
 
-  if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/$dist" ]; then
+  if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/vert.x-$version" ]; then
+    echo "Updating Vert.x $version cartridge"
+    wget http://dl.bintray.com/vertx/downloads/vert.x-$version.tar.gz -O $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
+
     for dir in "$OPENSHIFT_VERTX_DIR/usr/vert.x-*"
     do
       rm -rf $dir
     done
 
-    wget http://dl.bintray.com/vertx/downloads/$dist.tar.gz -O $OPENSHIFT_TMP_DIR/$dist.tar.gz
-    tar xzf $OPENSHIFT_TMP_DIR/$dist.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
+    tar xzf $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
   fi
+
+  echo "Starting Vert.x $version cartridge"
 
   envf="$OPENSHIFT_REPO_DIR/configuration/vertx.env"
   #  Source environment if it exists.
@@ -170,7 +169,7 @@ function start() {
 }
 
 function restart() {
-  echo "Restarting $cartridge_type cart"
+  echo "Restarting Vert.x $version cartridge"
   stop
   start
 }
@@ -191,7 +190,7 @@ function tidy() {
 }
 
 function threaddump() {
-  echo "Thread dump for $cartridge_type cartridge"
+  echo "Thread dump for Vert.x $version cartridge"
 
   if ! isrunning; then
     echo "Application is stopped"

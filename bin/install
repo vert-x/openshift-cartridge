@@ -1,22 +1,14 @@
 #!/bin/bash -e
 
-#case "$1" in
-#  -v|--version)
-#    version="$2"
-#esac
-
 version=${OPENSHIFT_VERTX_VERSION}
-# Uncomment to include a milestone release
-#milestone=${OPENSHIFT_VERTX_MILESTONE}
 
-vertx_dist=vert.x-$version$milestone
-
-if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/$vertx_dist" ]; then
-  wget http://dl.bintray.com/vertx/downloads/$vertx_dist.tar.gz -O $OPENSHIFT_TMP_DIR/$vertx_dist.tar.gz
-  tar xzf $OPENSHIFT_TMP_DIR/$vertx_dist.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
+if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/vert.x-$version" ]; then
+  wget http://dl.bintray.com/vertx/downloads/vert.x-$version.tar.gz -O $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
+  tar xzf $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
+  rm -f $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
 fi
 
-cp -rL $OPENSHIFT_VERTX_DIR/usr/$vertx_dist/conf $OPENSHIFT_VERTX_DIR
+cp -rL $OPENSHIFT_VERTX_DIR/usr/vert.x-$version/conf $OPENSHIFT_VERTX_DIR
 
 shopt -s dotglob
 for dir in conf; do

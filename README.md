@@ -66,15 +66,14 @@ For more information on application scaling in OpenShift see [Scaling on OpenShi
 
 ## Updating Vert.x
 
-The version of Vert.x that is installed is dictated by the version of the cartridge specified in the `metadata/manifest.yml` file when you first create
-the application. However it may be necessary to update the version manually w/out having to re-create the application. To do this there are two files under the `vertx/env` directory
+The version of Vert.x that is installed by default is specified by the cartridge `metadata/manifest.yml` file. However it may be necessary to update the version manually w/out having to re-create the application:
 
-    OPENSHIFT_VERTX_VERSION
-    OPENSHIFT_VERTX_MILESTONE
+    rhc ssh demo 'echo 2.1.2 > vertx/env/OPENSHIFT_VERTX_VERSION'
+    rhc ssh demo 'vertx/bin/control restart'
 
-These two values make up the Vert.x distribution that will be downloaded and installed into `vertx/usr`. After changing these values restart the application and you should now be running the new version.
+The above commands will change the Vert.x version stored in form of `$OPENSHIFT_VERTX_VERSION` environment variable and restart the application. The new version will be downloaded and installed into `vertx/usr` directory during the cartridge startup phase. Once the application is restarted successfully, you should be running the new version.
 
-**_Note_: To save space, the cartridge will remove any vert.x installations under this directory once the application is restarted.**
+**_Note_: The cartridge removes all unused versions from `vertx/usr` directory during the cartridge startup phase..**
 
 ## TODO
 

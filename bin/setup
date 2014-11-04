@@ -5,13 +5,21 @@ case "$1" in
     version="$2"
 esac
 
+case $version in
+2.1)
+  # Add minor version
+  version=$version.2
+  ;;
+*)
+  echo "Unsupported Vert.x version $version" >&2
+  exit 1
+esac
+
+echo "$version" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_VERSION
+
 mkdir -p ${OPENSHIFT_HOMEDIR}/.m2
 
 shopt -s dotglob
 for dir in logs; do
     mkdir -p $OPENSHIFT_VERTX_DIR/$dir
 done
-
-echo "$version" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_VERSION
-# Uncomment to include a milestone release
-#echo "RC4" > $OPENSHIFT_VERTX_DIR/env/OPENSHIFT_VERTX_MILESTONE
