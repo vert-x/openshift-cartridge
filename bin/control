@@ -104,7 +104,8 @@ function start() {
 
   if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/vert.x-$version" ]; then
     echo "Updating Vert.x $version cartridge"
-    wget http://dl.bintray.com/vertx/downloads/vert.x-$version.tar.gz -O $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
+    #TODO: Add back official distribution URL
+    wget http://dl.bintray.com/nscavell/vertx/vert.x-$version.tar.gz -O $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
 
     rm -rf $OPENSHIFT_VERTX_DIR/usr/vert.x-*
 
@@ -123,18 +124,12 @@ function start() {
   #  Source environment if it exists.
   [ -f "$envf" ]  &&  source "$envf"
 
-  # Determine correct vertx run command (run, runmod, runzip). TODO: A nice feature would have vertx have one run command
-  if [ "$vertx_zip" ]; then
-    vertx_run="runzip $vertx_zip"
-  fi
-  if [ "$vertx_module" ]; then
-    vertx_run="runmod $vertx_module"
-  fi
+  # Determine the app to run
   if [ "$vertx_app" ]; then
     vertx_run="run $vertx_app"
   fi
   if [ -z "$vertx_run" ]; then
-    error "Could not determine how to run vertx. Make sure you have configured vertx_app|vertx_module|vertx_zip in $envf" 1>&2 1
+    error "Could not determine how to run vertx. Make sure you have configured vertx_app in $envf" 1>&2 1
   fi
 
   # Setup max heap and permgen

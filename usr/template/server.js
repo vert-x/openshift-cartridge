@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-var vertx = require('vertx');
-var container = require('vertx/container');
-var console = require('vertx/console');
+var env = Java.type("java.lang.System").env;
 
-var ip = container.env['OPENSHIFT_VERTX_IP'] || '127.0.0.1';
-var port = parseInt(container.env['OPENSHIFT_VERTX_PORT'] || 8080);
+var ip = env['OPENSHIFT_VERTX_IP'] || '127.0.0.1';
+var port = parseInt(env['OPENSHIFT_VERTX_PORT'] || 8080);
 
-vertx.createHttpServer().requestHandler(function(req) {
+vertx.createHttpServer({port: port, host: ip}).requestHandler(function(req) {
   var file = req.path() === '/' ? 'index.html' : req.path();
-  req.response.sendFile('webroot/' + file);
-}).listen(port, ip, function(err) {
+  req.response().sendFile('webroot/' + file);
+}).listen(function(server, err) {
     if (!err) {
       console.log('Successfully listening on ' + ip + ':' + port);
     } else {
