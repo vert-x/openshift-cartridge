@@ -9,6 +9,21 @@ if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/vert.x-$version" ]; then
   rm -f $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
 fi
 
+# Remove this when openshift supports java 8
+if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/lib/jvm" ]; then
+  mkdir -p $OPENSHIFT_VERTX_DIR/usr/lib/jvm
+  pushd $OPENSHIFT_VERTX_DIR/usr/lib/jvm > /dev/null
+    if wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u25-b17/jdk-8u25-linux-i586.tar.gz > /dev/null; then
+      tar -xzf jdk-8u25-linux-i586.tar.gz
+      rm jdk-8u25-linux-i586.tar.gz
+      export JAVA_HOME=$OPENSHIFT_VERTX_DIR/usr/lib/jvm/jdk1.8.0_25
+      echo $JAVA_HOME > $OPENSHIFT_VERTX_DIR/env/JAVA_HOME
+    else
+      client_message "JDK 8 could not be installed. Vert.x 3 requires Java 8"
+    fi
+  popd > /dev/null
+fi
+
 mkdir -p $OPENSHIFT_VERTX_DIR/conf
 shopt -s dotglob
 
