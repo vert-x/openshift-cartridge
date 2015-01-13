@@ -136,13 +136,9 @@ function start() {
   if [ -z "$JVM_HEAP_RATIO" ]; then
     JVM_HEAP_RATIO=0.5
   fi
-  if [ -z "$JVM_PERMGEN_RATIO" ]; then
-    JVM_PERMGEN_RATIO=0.2
-  fi
   max_memory_mb=${OPENSHIFT_GEAR_MEMORY_MB}
   max_heap=$( echo "$max_memory_mb * $JVM_HEAP_RATIO" | bc | awk '{print int($1+0.5)}')
-  max_permgen=$( echo "$max_memory_mb * $JVM_PERMGEN_RATIO" | bc | awk '{print int($1+0.5)}')
-  VERTX_OPTS="$VERTX_OPTS -Xmx${max_heap}m -XX:MaxPermSize=${max_permgen}m"
+  VERTX_OPTS="$VERTX_OPTS -Xmx${max_heap}m"
   export VERTX_OPTS
 
   # Setup clustering
@@ -157,7 +153,7 @@ function start() {
   # Start up vertx
   pushd $OPENSHIFT_REPO_DIR > /dev/null
 
-    export CLASSPATH=$OPENSHIFT_VERTX_DIR/conf
+    export CLASSPATH=$OPENSHIFT_VERTX_DIR/conf:.
     export VERTX_JUL_CONFIG=$OPENSHIFT_VERTX_DIR/conf/logging.properties
     $VERTX_HOME/bin/vertx $vertx_run $vertx_run_options $vertx_cluster >> $logf 2>&1 &
     
