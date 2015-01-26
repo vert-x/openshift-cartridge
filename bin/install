@@ -4,7 +4,7 @@ version=${OPENSHIFT_VERTX_VERSION}
 
 if [ ! -d "$OPENSHIFT_VERTX_DIR/usr/vert.x-$version" ]; then
   #TODO: Add back official distribution URL
-  wget http://dl.bintray.com/nscavell/vertx/vert.x-$version.tar.gz -O $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
+  wget http://search.maven.org/remotecontent?filepath=io/vertx/vertx-stack-dist/$version/vertx-stack-dist-$version.tar.gz -O $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
   tar xzf $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz -C $OPENSHIFT_VERTX_DIR/usr/
   rm -f $OPENSHIFT_TMP_DIR/vert.x-$version.tar.gz
 fi

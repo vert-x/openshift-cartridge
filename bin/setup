@@ -12,7 +12,7 @@ case $version in
   ;;
 3.0)
   # Add minor version
-  version=$version.0-dev_preview1
+  version=$version.0-milestone2
   ;;
 *)
   echo "Unsupported Vert.x version $version" >&2
